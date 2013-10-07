@@ -1,0 +1,75 @@
+#!/usr/bin/env python
+import sys
+import getopt
+from jira.client import JIRA
+
+jira = JIRA()
+jac = JIRA(options={'server': 'https://yournamehere.jira.com'})
+import sys
+import getopt
+key_cert_data = None
+healthy = 0
+
+with open('/etc/ssl/certs/jira.pem', 'r') as key_cert_file:
+    key_cert_data = key_cert_file.read()
+    oauth_dict = {
+        'access_token': '',
+        'access_token_secret': '',
+        'consumer_key': '',
+        'key_cert': key_cert_data
+    }
+    authed_jira = JIRA(oauth=oauth_dict)
+
+
+def usage():
+    print """
+bugdozer, version (?)
+
+usage: bugdozer
+
+  -o [--open=]     : Specify the project where you're opening a new issue
+  -s [--summary=]  : Insert a description in your project
+  -c [--close=]    : Close a ticket on JIRA
+"""
+    sys.exit(2)
+
+try:
+    opts, args = getopt.getopt(sys.argv[1:], 'h:o:d:s:c', ['help', 'open=', 'description=', 'summary=', 'close='])
+except getopt.GetoptError:
+    usage()
+    sys.exit(2)
+
+for opt, arg in opts:
+    if opt in ('-h', '--help'):
+        usage()
+        sys.exit(2)
+    elif opt in ('-o', '--open'):
+        project_name = arg
+        print project_name
+    elif opt in ('-s', '--summary'):
+        summary = arg
+        print summary
+    elif opt in ('-d', '--description'):
+        description = arg
+        print description
+        healthy = 1
+    elif opt in ('-c', '--close'):
+        close = arg
+        issue = authed_jira.issue(close)
+        authed_jira.transition_issue(issue, '5', assignee={'name': 'deploy'}, resolution={'id': '3'})
+    else:
+        usage()
+        sys.exit(2)
+
+
+if healthy == 1:
+    issue_dict = {
+                'project': {'key': project_name },
+                'summary': summary,
+                'description': description,
+                'issuetype': {'name': 'Bug'},
+    }
+    new_issue = authed_jira.create_issue(fields=issue_dict)
+elif not healthy:
+    print usage()
+    sys.exit(2)
