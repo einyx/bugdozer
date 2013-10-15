@@ -4,7 +4,7 @@ import getopt
 from jira.client import JIRA
 
 jira = JIRA()
-jac = JIRA(options={'server': 'https://yournamehere.jira.com'})
+jac = JIRA(options={'server': 'https://hailo.jira.com'})
 import sys
 import getopt
 key_cert_data = None
@@ -23,13 +23,14 @@ with open('/etc/ssl/certs/jira.pem', 'r') as key_cert_file:
 
 def usage():
     print """
-bugdozer, version (?)
+hailo-deploy, version (?)
 
-usage: bugdozer
+usage: hailo-deploy
 
-  -o [--open=]     : Specify the project where you're opening a new issue
-  -s [--summary=]  : Insert a description in your project
-  -c [--close=]    : Close a ticket on JIRA
+  -o= [--open=]            : Specify the project where you're opening a new issue
+  -d= [--description=]     : Specify the project where you're opening a new issue
+  -s= [--summary=]         : Insert a description in your project
+  -c= [--close=]           : Close a ticket on JIRA
 """
     sys.exit(2)
 
