@@ -4,7 +4,7 @@ import getopt
 from jira.client import JIRA
 
 jira = JIRA()
-jac = JIRA(options={'server': 'https://hailo.jira.com'})
+jac = JIRA(options={'server': 'https://.jira.com'})
 import sys
 import getopt
 key_cert_data = None
